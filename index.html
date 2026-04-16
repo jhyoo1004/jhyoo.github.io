@@ -2,65 +2,73 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>AI 타자 분석기: 3할 타자 분류 모델</title>
+    <title>AI 야구부원 분석: 변수와 그래프의 관계</title>
     <style>
-        body { font-family: 'Pretendard', sans-serif; background: #f4f7f6; display: flex; justify-content: center; padding: 40px; }
-        .container { background: white; width: 550px; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
-        h1 { color: #0d47a1; font-size: 1.6rem; margin-bottom: 5px; }
-        .description { color: #555; font-size: 0.95rem; margin-bottom: 25px; line-height: 1.5; }
+        body { font-family: 'Pretendard', sans-serif; background: #f8f9fa; display: flex; justify-content: center; padding: 20px; }
+        .container { background: white; width: 650px; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #0d47a1; font-size: 1.5rem; }
         
-        /* 입력 영역 */
-        .input-section { background: #e3f2fd; padding: 25px; border-radius: 15px; margin-bottom: 25px; }
-        .slider { width: 100%; height: 8px; border-radius: 5px; background: #bbdefb; outline: none; margin: 15px 0; }
-        .avg-display { font-size: 2.5rem; font-weight: 800; color: #1565c0; }
+        /* 변수 설명 영역 */
+        .variable-info { display: flex; justify-content: space-between; margin-bottom: 20px; gap: 10px; }
+        .var-card { flex: 1; padding: 15px; border-radius: 12px; font-size: 0.9rem; line-height: 1.4; }
+        .independent { background: #e3f2fd; border-left: 5px solid #2196f3; }
+        .dependent { background: #fff3e0; border-left: 5px solid #ff9800; }
+        .var-title { font-weight: bold; display: block; margin-bottom: 5px; font-size: 1rem; }
 
-        /* 판정 카드 */
-        .result-card { padding: 30px; border-radius: 15px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; overflow: hidden; }
-        .is-pro { background: #1a237e; color: white; border: 3px solid #3f51b5; }
-        .is-not { background: #ffffff; color: #333; border: 3px solid #eeeeee; }
+        /* 조작 영역 */
+        .control-panel { background: #f1f3f5; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+        .slider { width: 100%; height: 10px; border-radius: 5px; margin: 15px 0; cursor: pointer; }
+        .val-display { font-size: 2rem; font-weight: 800; color: #1565c0; }
+
+        /* 그래프 시각화 영역 */
+        .visualization { border: 2px solid #eee; padding: 20px; border-radius: 15px; position: relative; }
+        .graph-area { height: 150px; display: flex; align-items: flex-end; justify-content: center; position: relative; border-bottom: 2px solid #333; border-left: 2px solid #333; margin-bottom: 30px; }
+        .sigmoid-curve { width: 100%; height: 100%; stroke: #dee2e6; stroke-width: 2; fill: none; }
+        .current-point { position: absolute; width: 15px; height: 15px; background: #ff1744; border-radius: 50%; transform: translate(-50%, 50%); transition: all 0.2s ease; box-shadow: 0 0 10px rgba(255,23,68,0.5); }
         
-        /* 확률 게이지 */
-        .gauge-label { display: block; margin-top: 15px; font-size: 0.85rem; text-align: left; }
-        .gauge-bg { background: #eee; height: 12px; border-radius: 6px; margin: 8px 0; overflow: hidden; }
-        .gauge-fill { height: 100%; transition: width 0.4s ease, background-color 0.4s ease; }
-
-        .decision-tag { font-size: 1.8rem; font-weight: bold; margin-top: 10px; }
-        .formula { font-size: 0.85rem; color: #777; margin-top: 25px; border-top: 1px solid #eee; padding-top: 15px; }
+        /* 결과 메시지 */
+        .decision-box { text-align: center; padding: 20px; border-radius: 12px; font-size: 1.5rem; font-weight: bold; transition: 0.3s; }
+        .pass { background: #1a237e; color: white; }
+        .fail { background: #eeeeee; color: #333; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>⚾ AI 타자 분석 시스템</h1>
-    <p class="description">시그모이드 함수를 통해 타율 데이터를 분석하고<br><strong>'3할 타자(Elite Hitter)'</strong> 여부를 분류합니다.</p>
+    <h1>⚾ 야구부 데이터 분석 모델</h1>
 
-    <div class="input-section">
-        <label>현재 시즌 타율</label>
-        <div class="avg-display">.<span id="avgText">300</span></div>
+    <div class="variable-info">
+        <div class="var-card independent">
+            <span class="var-title">🟦 독립변수 (x)</span>
+            <strong>원인: 타율 (성적)</strong><br>
+            인공지능 모델에 입력되는 값으로, 결과에 영향을 줍니다.
+        </div>
+        <div class="var-card dependent">
+            <span class="var-title">🟧 종속변수 (y)</span>
+            <strong>결과: 3할 타자 여부</strong><br>
+            독립변수에 의해 결정되는 값(0 또는 1)입니다.
+        </div>
+    </div>
+
+    <div class="control-panel">
+        <label>타율 입력 (독립변수 x)</label>
+        <div class="val-display">.<span id="avgText">300</span></div>
         <input type="range" id="avgSlider" class="slider" min="0" max="600" value="300">
-        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #666;">
-            <span>.000</span>
-            <span>.300 (기준점)</span>
-            <span>.600</span>
-        </div>
     </div>
 
-    <div id="card" class="result-card is-pro">
-        <div style="text-align: left; font-weight: 600;">데이터 분석 결과:</div>
-        <div style="font-size: 2.2rem; font-weight: 900; margin: 10px 0;">확률 <span id="probText">50.0</span>%</div>
-        
-        <div class="gauge-label">3할 타자일 확률 (Threshold: 0.5)</div>
-        <div class="gauge-bg">
-            <div id="fill" class="gauge-fill" style="width: 50%; background-color: #ffd600;"></div>
+    <div class="visualization">
+        <div style="font-size: 0.8rem; color: #777; margin-bottom: 10px;">세로축(y): 3할 타자일 확률 (0~1)</div>
+        <div class="graph-area">
+            <svg class="sigmoid-curve" viewBox="0 0 600 150">
+                <path id="curvePath" d="M0,150 Q300,150 300,75 T600,0" stroke="#ccc" />
+            </svg>
+            <div id="point" class="current-point" style="left: 50%; bottom: 50%;"></div>
         </div>
-        
-        <div id="decision" class="decision-tag">분류: 3할 타자 (1)</div>
+        <div style="text-align: right; font-size: 0.8rem; color: #777;">가로축(x): 타율</div>
     </div>
 
-    <div class="formula">
-        <strong>교수학습 포인트:</strong><br>
-        타율이 0.300 근처에서 확률이 급격히 변하는 <b>S-곡선(Sigmoid)</b>을 확인하세요.<br>
-        연속적인 타율 값이 어떻게 0 또는 1로 분류되는지가 핵심입니다.
+    <div id="decisionBox" class="decision-box pass">
+        확률: <span id="probText">50.0</span>% → <span id="resText">3할 타자 (1)</span>
     </div>
 </div>
 
@@ -68,36 +76,35 @@
     const slider = document.getElementById('avgSlider');
     const avgText = document.getElementById('avgText');
     const probText = document.getElementById('probText');
-    const fill = document.getElementById('fill');
-    const card = document.getElementById('card');
-    const decision = document.getElementById('decision');
+    const resText = document.getElementById('resText');
+    const point = document.getElementById('point');
+    const decisionBox = document.getElementById('decisionBox');
 
     slider.addEventListener('input', function() {
         const rawValue = parseInt(this.value);
-        const displayVal = rawValue.toString().padStart(3, '0');
-        avgText.innerText = displayVal;
+        avgText.innerText = rawValue.toString().padStart(3, '0');
 
-        // 로지스틱 회귀 로직
-        // 타율 0.300을 결정 경계(0.5)로 설정
+        // 로지스틱 회귀 (시그모이드) 계산
         const x = rawValue / 1000;
-        const w = 40; // 기울기를 높여 0.300 부근에서 가파른 S-곡선 형성
+        const w = 40; 
         const b = -w * 0.300; 
         const z = w * x + b;
         const p = 1 / (1 + Math.exp(-z));
         
         const probability = (p * 100).toFixed(1);
         probText.innerText = probability;
-        fill.style.width = probability + "%";
 
-        // 분류 결정 (0.5 기준)
+        // 그래프 포인트 이동
+        point.style.left = (rawValue / 600 * 100) + "%";
+        point.style.bottom = (p * 100) + "%";
+
+        // 결과 판정 (분류)
         if (p >= 0.5) {
-            card.className = "result-card is-pro";
-            fill.style.backgroundColor = "#ffd600";
-            decision.innerText = "분류: 3할 타자 (1)";
+            decisionBox.className = "decision-box pass";
+            resText.innerText = "3할 타자 (1)";
         } else {
-            card.className = "result-card is-not";
-            fill.style.backgroundColor = "#0d47a1";
-            decision.innerText = "분류: 일반 타자 (0)";
+            decisionBox.className = "decision-box fail";
+            resText.innerText = "일반 타자 (0)";
         }
     });
 </script>
